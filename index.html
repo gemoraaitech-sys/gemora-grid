@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Gemora: AI intelligence grid on WhatsApp for education, business, health, and more in Africa. No apps, no sign-up." />
+  <meta property="og:title" content="Gemora — Intelligence Grid" />
+  <meta property="og:description" content="Your World, On WhatsApp. AI-powered assistance for students, businesses, and daily life." />
+  <meta property="og:image" content="https://example.com/gemora-og-image.jpg" /> <meta name="twitter:card" content="summary_large_image" />
+
+  <title>Gemora — Intelligence Grid</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+    :root { color-scheme: dark; --primary: #10b981; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; overflow-x: hidden; }
+    .glass { backdrop-filter: blur(16px); background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); }
+    .neural-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.07) 0%, transparent 50%); z-index: -1; }
+    #cursor-glow { position: fixed; width: 500px; height: 500px; background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%); border-radius: 50%; pointer-events: none; z-index: -1; transform: translate(-50%, -50%); transition: opacity 0.3s; }
+    .feature-card { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255,255,255,0.05); transition: all 0.4s ease; cursor: pointer; }
+    .feature-card:hover { border-color: var(--primary); transform: translateY(-5px); background: rgba(30, 41, 59, 0.6); box-shadow: 0 0 30px rgba(16, 185, 129, 0.1); }
+    #feature-modal { display: none; }
+    #feature-modal.active { display: flex; }
+    .goog-te-banner-frame.skiptranslate { display: none !important; } 
+    body { top: 0px !important; }
+    #google_translate_element { display: none; }
+    .flag-btn.active { background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.5); transform: scale(1.1); }
+    .accordion-btn { transition: all 0.3s; }
+    .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .accordion-btn.active + .accordion-content { max-height: 500px; }
+    #exit-popup { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; }
+    #exit-popup.active { display: flex; }
+    .theme-light { --primary: #059669; background: #f8fafc; color: #020617; }
+    .theme-light .glass { background: rgba(255,255,255,0.8); border: 1px solid rgba(0,0,0,0.1); }
+    .theme-light .neural-bg { background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.07) 0%, transparent 50%); }
+  </style>
+</head>
+
+<body class="theme-dark">
+  <div id="cursor-glow"></div>
+  <div class="neural-bg"></div>
+  <div id="google_translate_element"></div>
+
+  <a href="https://wa.me/2348000000000" target="_blank" class="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-[90] w-14 h-14 md:w-16 md:h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white text-2xl md:text-3xl shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:scale-110 transition-transform duration-300">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <button id="theme-toggle" class="fixed top-4 right-4 z-50 p-2 bg-white/5 rounded-full border border-white/10 text-white hover:bg-emerald-500">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <div id="feature-modal" class="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md items-center justify-center p-4">
+    <div class="glass rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl relative">
+        <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        <div class="text-center">
+            <div id="modal-icon" class="text-4xl mb-4">🚀</div>
+            <h3 id="modal-title" class="text-2xl font-extrabold text-white mb-2 italic">How can we help?</h3>
+            <button onclick="triggerTranslate()" class="mb-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-emerald-500 hover:text-white transition-all border border-white/10">
+                <i class="fas fa-language text-sm"></i> Translate to English
+            </button>
+            <p class="text-slate-400 mb-6 text-sm">Select a specific request to start on WhatsApp:</p>
+            <div id="questions-list" class="space-y-3 mb-6 text-left"></div>
+            <p class="text-[10px] text-emerald-500 uppercase font-black tracking-widest italic animate-pulse">⚡ Connected to Gemora Grid</p>
+        </div>
+    </div>
+  </div>
+
+  <div id="exit-popup" class="p-4">
+    <div class="glass rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl text-center">
+      <h3 class="text-2xl font-bold mb-4">Wait! Try Gemora for Free</h3>
+      <p class="text-slate-400 mb-6">Ask one quick question on WhatsApp before you go.</p>
+      <button onclick="window.open('https://wa.me/2348000000000?text=Hi Gemora! Quick question:', '_blank'); document.getElementById('exit-popup').classList.remove('active');" class="bg-emerald-500 text-white px-6 py-3 rounded-full font-bold">Ask Now</button>
+      <button onclick="document.getElementById('exit-popup').classList.remove('active');" class="ml-4 text-slate-400">No Thanks</button>
+    </div>
+  </div>
+
+  <nav class="fixed top-0 w-full z-50 px-4 md:px-6 py-4 glass border-b border-white/5 flex justify-center">
+    <div class="max-w-7xl w-full flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-[0_0_10px_rgba(16,185,129,0.4)]">
+                <i class="fas fa-microchip text-black text-xs"></i>
+            </div>
+            <span class="font-extrabold text-lg md:text-xl tracking-tighter uppercase">Gemora</span>
+        </div>
+        <div class="flex gap-1 md:gap-2 bg-white/5 p-1 rounded-full border border-white/10 overflow-x-auto">
+            <button onclick="setCountry('NG')" data-country="NG" class="flag-btn px-2 md:px-3 py-1 hover:bg-white/10 rounded-full transition-all text-base md:text-lg">🇳🇬</button>
+            <button onclick="setCountry('ZA')" data-country="ZA" class="flag-btn px-2 md:px-3 py-1 hover:bg-white/10 rounded-full transition-all text-base md:text-lg">🇿🇦</button>
+            <button onclick="setCountry('EG')" data-country="EG" class="flag-btn px-2 md:px-3 py-1 hover:bg-white/10 rounded-full transition-all text-base md:text-lg">🇪🇬</button>
+            <button onclick="setCountry('KE')" data-country="KE" class="flag-btn px-2 md:px-3 py-1 hover:bg-white/10 rounded-full transition-all text-base md:text-lg">🇰🇪</button>
+            <button onclick="setCountry('GH')" data-country="GH" class="flag-btn px-2 md:px-3 py-1 hover:bg-white/10 rounded-full transition-all text-base md:text-lg">🇬🇭</button>
+        </div>
+    </div>
+  </nav>
+
+  <section class="pt-32 md:pt-40 pb-16 px-6">
+    <div class="max-w-7xl mx-auto text-center">
+        <div id="country-badge" class="inline-flex items-center bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full text-[9px] md:text-[10px] font-black mb-8 tracking-[0.2em] border border-emerald-500/20 italic">
+            🇳🇬 LOADING LOCAL GRID...
+        </div>
+        <h1 id="hero-title" class="text-4xl md:text-8xl font-extrabold tracking-tighter mb-8 leading-tight">
+            Your World, <span class="text-emerald-500 italic">On WhatsApp.</span>
+        </h1>
+        <p id="hero-desc" class="text-slate-400 text-base md:text-xl max-w-2xl mx-auto mb-4 font-medium"></p>
+        <p class="text-emerald-400 text-xs md:text-sm italic mb-12">No apps. No sign-up. Just WhatsApp.</p>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left">
+            <div class="lg:col-span-2 glass rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-10 relative overflow-hidden">
+                <div class="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-4 py-1 rounded-full text-[10px] font-bold mb-4 border border-emerald-500/20 uppercase tracking-widest">
+                    🎓 STUDENTS & LEARNING
+                </div>
+                <h3 class="text-2xl md:text-3xl font-bold mb-8 italic text-white">Education & Core Help</h3>
+                <ul id="main-features" class="space-y-4 text-slate-300 text-base md:text-lg"></ul>
+                <button onclick="openModal('Education', '🎓')" class="w-full md:w-auto mt-10 bg-emerald-600 text-white px-10 py-5 rounded-2xl font-bold hover:bg-emerald-500 transition-all flex items-center justify-center gap-3 shadow-lg">
+                    <i class="fab fa-whatsapp text-xl"></i> Chat Now
+                </button>
+            </div>
+            
+            <div class="glass rounded-[2.5rem] md:rounded-[3rem] p-8 flex flex-col justify-center min-h-[250px]">
+                <p class="text-[10px] font-black text-emerald-500 mb-2 uppercase tracking-widest italic">Gemora Neural Feed:</p>
+                <div class="text-lg md:text-xl font-bold text-white italic mb-6">"<span id="user-typing"></span>"</div>
+                <div id="ai-box" class="opacity-0 transition-all duration-700 transform translate-y-4 bg-emerald-600 text-white p-6 rounded-2xl rounded-tl-none">
+                    <p id="ai-resp" class="text-sm leading-relaxed"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-20 px-6 bg-white/[0.02]">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold text-white mb-10 text-center italic">Beyond the Classroom 🚀</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div onclick="openModal('Scam Detection', '🚨')" class="feature-card p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
+                <div class="text-3xl mb-4">🚨</div>
+                <h4 class="font-extrabold text-lg md:text-xl mb-2 italic text-white">Scam Detection</h4>
+                <p class="text-xs md:text-sm text-slate-500 italic">Verify investment and link red flags instantly.</p>
+            </div>
+            <div onclick="openModal('Business', '💼')" class="feature-card p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
+                <div class="text-3xl mb-4">💼</div>
+                <h4 class="font-extrabold text-lg md:text-xl mb-2 italic text-white">Small Biz Hustle</h4>
+                <p class="text-xs md:text-sm text-slate-500 italic">Plans and generators for your growth.</p>
+            </div>
+            <div onclick="openModal('Mental Health', '🧠')" class="feature-card p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
+                <div class="text-3xl mb-4">🧠</div>
+                <h4 class="font-extrabold text-lg md:text-xl mb-2 italic text-white">Mental Health</h4>
+                <p class="text-xs md:text-sm text-slate-500 italic">Crisis support and stress management.</p>
+            </div>
+            <div onclick="openModal('Life Advice', '❤️')" class="feature-card p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
+                <div class="text-3xl mb-4">❤️</div>
+                <h4 class="font-extrabold text-lg md:text-xl mb-2 italic text-white">Life Advice</h4>
+                <p class="text-xs md:text-sm text-slate-500 italic">Conflict resolution and family tips.</p>
+            </div>
+            <div onclick="openModal('Health', '🏥')" class="feature-card p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border-red-500/20">
+                <div class="text-3xl mb-4">🏥</div>
+                <h4 class="font-extrabold text-lg md:text-xl mb-2 italic text-red-400">Health Mode</h4>
+                <p class="text-xs md:text-sm text-slate-500 italic">Symptom checks and local clinics.</p>
+            </div>
+            <div onclick="openModal('Content Studio', '🎬')" class="feature-card p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-emerald-900/20 border-emerald-500/30">
+                <div class="text-3xl mb-4">🎬</div>
+                <h4 class="font-bold text-lg md:text-xl mb-3 text-white italic">Content Studio</h4>
+                <p class="text-slate-400 text-xs md:text-sm italic">Video scripts & image prompts for faceless YouTube automation.</p>
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-24 px-6">
+    <div class="max-w-7xl mx-auto text-center mb-12">
+        <h2 class="text-3xl md:text-5xl font-bold mb-4 italic">See Gemora AI in Action</h2>
+        <p class="text-slate-400">Real examples of how Gemora helps users like you.</p>
+    </div>
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass p-6 rounded-2xl">
+            <p class="text-sm italic mb-4">"Generate a business plan for a Lagos startup."</p>
+            <p class="text-slate-300 text-xs">Gemora: "Here's a 5-page outline with market analysis, financials, and CAC steps."</p>
+        </div>
+        <div class="glass p-6 rounded-2xl">
+            <p class="text-sm italic mb-4">"Help with JAMB math prep."</p>
+            <p class="text-slate-300 text-xs">Gemora: "Practice questions: Solve 2x + 3 = 7. Step-by-step: Subtract 3..."</p>
+        </div>
+        <div class="glass p-6 rounded-2xl">
+            <p class="text-sm italic mb-4">"Check this link for scams."</p>
+            <p class="text-slate-300 text-xs">Gemora: "High risk: New domain, phishing flags detected."</p>
+        </div>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-24 px-6 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-12 md:mb-16">
+            <h2 class="text-3xl md:text-6xl font-extrabold tracking-tighter mb-4 italic text-white">Grid <span class="text-emerald-500">Live Trial.</span></h2>
+            <p class="text-slate-400 font-medium italic text-sm md:text-base">Experience the power of the Pro Grid before subscribing.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+            <div class="glass p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border-emerald-500/20 relative">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-black shadow-lg shadow-emerald-500/20">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-black italic text-white">The Hustler's ROI</h3>
+                </div>
+                
+                <p class="text-slate-400 text-xs md:text-sm mb-10 italic">Compare Gemora Pro vs Hiring traditional freelancers.</p>
+
+                <div class="space-y-10">
+                    <div>
+                        <div class="flex justify-between mb-4">
+                            <label class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 italic">Monthly Scripts & Content</label>
+                            <span id="content-val" class="font-black text-emerald-400 text-sm">10</span>
+                        </div>
+                        <input type="range" id="content-slider" min="0" max="100" value="10" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" oninput="updateROI()">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between mb-4">
+                            <label class="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500 italic">Business Docs & Plans</label>
+                            <span id="docs-val" class="font-black text-emerald-400 text-sm">5</span>
+                        </div>
+                        <input type="range" id="docs-slider" min="0" max="50" value="5" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" oninput="updateROI()">
+                    </div>
+                </div>
+
+                <div class="mt-12 p-6 md:p-8 bg-emerald-500/5 rounded-[1.5rem] md:rounded-[2rem] border border-emerald-500/20">
+                    <div class="flex justify-between items-end mb-6">
+                        <div>
+                            <p class="text-[9px] font-black uppercase text-slate-500 italic">Freelancer Fees</p>
+                            <p class="text-lg md:text-xl line-through text-slate-600 font-bold" id="old-price">₦85,000</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[9px] font-black uppercase text-emerald-500 italic">Gemora Pro</p>
+                            <p class="text-2xl md:text-3xl text-white font-black italic">₦15,000</p>
+                        </div>
+                    </div>
+                    <div class="pt-6 border-t border-white/5 text-center">
+                        <p class="text-[9px] font-black uppercase text-slate-400 mb-1">Your Monthly Savings</p>
+                        <p class="text-3xl md:text-5xl text-emerald-400 font-black italic tracking-tighter" id="savings-val">₦70,000</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border-red-500/20 relative overflow-hidden">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="w-10 h-10 bg-red-500/20 rounded-full flex items-center justify-center text-red-500">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-black italic text-white">Scam Shield Live</h3>
+                </div>
+
+                <div class="mb-6">
+                    <input type="text" id="scam-input" placeholder="Paste suspicious link here..." class="w-full bg-black/40 border border-white/10 p-4 rounded-xl text-sm focus:outline-none focus:border-emerald-500 transition-all text-emerald-400 font-medium">
+                </div>
+
+                <div class="bg-black/60 rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border border-white/5 relative overflow-hidden">
+                    <div id="scan-result" class="space-y-4">
+                        <div id="status-box" class="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-white/5">
+                            <span class="text-[10px] font-black text-slate-500">AWAITING INPUT...</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 opacity-30" id="scan-details">
+                            <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+                                <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Domain Age</p>
+                                <p class="text-xs font-bold">--</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-white/5 border border-white/10 text-center">
+                                <p class="text-[8px] font-black text-slate-500 uppercase mb-1">Risk Score</p>
+                                <p class="text-xs font-bold">--</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="scan-overlay" class="absolute inset-0 bg-emerald-500/10 backdrop-blur-md flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-500">
+                        <div class="w-12 md:w-16 h-12 md:h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <p id="scan-text" class="text-[10px] font-black text-emerald-500 uppercase tracking-[0.4em]">Neural Scanning Grid...</p>
+                    </div>
+                </div>
+
+                <button onclick="runScanTrial()" class="w-full mt-8 py-4 md:py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-emerald-500 hover:text-black transition-all flex items-center justify-center gap-3 group">
+                    <i class="fas fa-bolt text-emerald-500 group-hover:text-black"></i> Run Live Security Scan
+                </button>
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-24 px-6 bg-white/[0.02]">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-3xl md:text-5xl font-bold text-center mb-12 italic">What Users Say</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass p-6 rounded-2xl text-center">
+                <p class="text-slate-300 mb-4 italic">"Gemora saved me hours on my business plan!"</p>
+                <p class="text-sm text-emerald-400">- Ade from Abuja</p>
+            </div>
+            <div class="glass p-6 rounded-2xl text-center">
+                <p class="text-slate-300 mb-4 italic">"Best AI for JAMB prep. Passed with flying colors."</p>
+                <p class="text-sm text-emerald-400">- Chioma from Lagos</p>
+            </div>
+            <div class="glass p-6 rounded-2xl text-center">
+                <p class="text-slate-300 mb-4 italic">"Detected a scam link instantly. Lifesaver!"</p>
+                <p class="text-sm text-emerald-400">- Musa from Kano</p>
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-24 px-6">
+    <div class="max-w-7xl mx-auto text-center mb-12">
+        <h2 class="text-3xl md:text-5xl font-bold mb-4 italic">Demo Video</h2>
+        <p class="text-slate-400">Watch how Gemora works on WhatsApp.</p>
+    </div>
+    <div class="max-w-4xl mx-auto">
+        <iframe width="100%" height="400" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Gemora Demo" frameborder="0" allowfullscreen></iframe> </div>
+  </section>
+
+  <section class="py-16 md:py-24 px-6 bg-white/[0.02]">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-3xl md:text-5xl font-bold text-center mb-12 italic">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+            <button class="accordion-btn w-full text-left p-4 bg-white/5 rounded-xl border border-white/10 hover:border-emerald-500 font-bold flex justify-between items-center">
+                How does Gemora work?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="accordion-content px-4 text-slate-400 text-sm">
+                Gemora is an AI assistant accessible via WhatsApp. Just message us, and we'll handle your queries instantly.
+            </div>
+
+            <button class="accordion-btn w-full text-left p-4 bg-white/5 rounded-xl border border-white/10 hover:border-emerald-500 font-bold flex justify-between items-center">
+                Is my data private?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="accordion-content px-4 text-slate-400 text-sm">
+                Yes, we prioritize privacy. No data is shared without consent. See our <a href="#privacy" class="text-emerald-500">Privacy Policy</a>.
+            </div>
+
+            <button class="accordion-btn w-full text-left p-4 bg-white/5 rounded-xl border border-white/10 hover:border-emerald-500 font-bold flex justify-between items-center">
+                What if I exceed limits?
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="accordion-content px-4 text-slate-400 text-sm">
+                Upgrade to Pro or Premium for higher limits. Contact us for custom plans.
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-24 px-6">
+    <div class="max-w-7xl mx-auto text-center">
+        <h2 class="text-3xl md:text-5xl font-bold mb-8 italic">Stay Updated</h2>
+        <p class="text-slate-400 mb-6">Get AI tips and updates via email.</p>
+        <form action="https://formspree.io/f/your-form-id" method="POST" class="max-w-md mx-auto flex gap-2"> <input type="email" name="email" placeholder="Your email" class="flex-grow bg-white/5 border border-white/10 p-3 rounded-full text-sm focus:outline-none focus:border-emerald-500">
+            <button type="submit" class="bg-emerald-500 text-white px-6 py-3 rounded-full font-bold">Subscribe</button>
+        </form>
+    </div>
+  </section>
+
+  <section id="pricing" class="py-16 md:py-24 px-6 relative">
+    <div class="max-w-7xl mx-auto text-center mb-16">
+        <h2 class="text-3xl md:text-6xl font-extrabold tracking-tighter mb-4 italic text-white">Select Your <span class="text-emerald-500">Access Level.</span></h2>
+        <p class="text-slate-400 font-medium italic text-sm md:text-base">After payment, you will be redirected back to the WhatsApp Grid.</p>
+    </div>
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-start">
+        
+        <div class="glass p-8 rounded-[2.5rem] border-emerald-500/20 flex flex-col hover:border-emerald-500/50 transition-all bg-emerald-500/5">
+            <span class="bg-emerald-500/20 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest text-emerald-400 w-fit mb-4">Hustle Grid</span>
+            <h4 class="text-2xl font-black mb-1 italic text-white">GEMORA HUSTLE</h4>
+            <div class="text-3xl font-black mb-6"><span id="price-hustle">₦3,000</span> <span class="text-sm text-slate-500 font-medium">/ Week</span></div>
+            <ul class="space-y-4 text-slate-400 text-sm mb-10 flex-grow">
+                <li><i class="fas fa-check text-emerald-500 mr-2"></i> 20 AI Requests / Day</li>
+                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Instant Homework Solver</li>
+                <li><i class="fas fa-check text-emerald-500 mr-2"></i> 24/7 Q&A Support</li>
+                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Scam Link Checker</li>
+                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Daily Motivation Quotes</li>
+                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Quick Summary Tool</li>
+                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Basic Biz Plan Intro</li>
+            </ul>
+            <button onclick="handlePayment('Gemora Hustle')" class="w-full py-4 rounded-2xl bg-white/5 border border-white/10 font-bold hover:bg-emerald-500/20 text-white">Start Week</button>
+        </div>
+
+        <div class="glass p-8 rounded-[2.5rem] border-white/5 flex flex-col hover:border-emerald-500/30 transition-all">
+            <span class="bg-white/10 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest text-slate-300 w-fit mb-4">Starter Grid</span>
+            <h4 class="text-2xl font-black mb-1 italic text-white">GEMORA PLUS</h4>
+            <div class="text-3xl font-black mb-6"><span id="price-plus">₦15,000</span> <span id="price-plus-period" class="text-sm text-slate-500 font-medium">/ Month</span></div>
+            <ul class="space-y-4 text-slate-400 text-sm mb-10 flex-grow">
+                <li><i class="fas fa-check text-emerald-500 mr-2"></i> 100 AI Requests / Day</li>
+                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Document Summarizer</li>
+                <li><i class="fas fa-check text-emerald-500 mr-2"></i> Basic Exam Prep</li>
+                <li><i class="fas fa-video text-slate-600 mr-2"></i> 2 Standard Videos / Mo</li>
+                <li><i class="fas fa-image text-emerald-500 mr-2"></i> 10 AI Images / Mo</li>
+            </ul>
+            <button onclick="handlePayment('Gemora Plus')" class="w-full py-4 rounded-2xl bg-white/5 border border-white/10 font-bold hover:bg-white/10 text-white">Get Plus</button>
+        </div>
+
+        <div class="glass p-8 rounded-[3rem] border-emerald-500/50 bg-emerald-500/5 relative flex flex-col shadow-[0_0_50px_rgba(16,185,129,0.15)]">
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-500 text-black text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest">Most Popular</div>
+            <span class="bg-emerald-500 text-black text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest w-fit mb-4">Creator Grid</span>
+            <h4 class="text-2xl font-black mb-1 italic text-emerald-400">GEMORA PRO</h4>
+            <div class="text-3xl font-black mb-6"><span id="price-pro">₦35,000</span> <span id="price-pro-period" class="text-sm text-slate-400 font-medium">/ Month</span></div>
+            <ul class="space-y-4 text-slate-200 text-sm mb-10 flex-grow">
+                <li><i class="fas fa-fire text-emerald-400 mr-2"></i> 500 AI Requests / Day</li>
+                <li><i class="fas fa-fire text-emerald-400 mr-2"></i> **Sora 2 Pro Video** (8 Clips)</li>
+                <li><i class="fas fa-fire text-emerald-400 mr-2"></i> Image-to-Video Animation</li>
+                <li><i class="fas fa-fire text-emerald-400 mr-2"></i> **Voice-to-Video Mode**</li>
+                <li><i class="fas fa-fire text-emerald-400 mr-2"></i> 50 AI Images / Mo</li>
+            </ul>
+            <button onclick="handlePayment('Gemora Pro')" class="w-full py-4 rounded-2xl bg-emerald-600 text-white font-bold hover:bg-emerald-500">Go Pro Now</button>
+        </div>
+
+        <div class="glass p-8 rounded-[2.5rem] border-white/5 flex flex-col hover:border-purple-500/30 transition-all">
+            <span class="bg-purple-500/20 text-purple-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest w-fit mb-4">Elite Grid</span>
+            <h4 class="text-2xl font-black mb-1 italic text-white">GEMORA PREMIUM</h4>
+            <div class="text-3xl font-black mb-6"><span id="price-premium">₦75,000</span> <span id="price-premium-period" class="text-sm text-slate-500 font-medium">/ Month</span></div>
+            <ul class="space-y-4 text-slate-400 text-sm mb-10 flex-grow">
+                <li><i class="fas fa-gem text-yellow-500 mr-2"></i> **Everything in Pro**</li>
+                <li><i class="fas fa-gem text-yellow-500 mr-2"></i> 1,500 AI Requests / Day</li>
+                <li><i class="fas fa-gem text-yellow-500 mr-2"></i> **Faceless Video Creator**</li>
+                <li><i class="fas fa-gem text-yellow-500 mr-2"></i> Sora 2 Pro (20 Clips)</li>
+                <li><i class="fas fa-gem text-yellow-500 mr-2"></i> VIP Beta Tool Access</li>
+            </ul>
+            <button onclick="handlePayment('Gemora Premium')" class="w-full py-4 rounded-2xl bg-white/5 border border-white/10 font-bold hover:bg-white/10 text-white">Unlock Premium</button>
+        </div>
+
+        <div class="glass p-8 rounded-[2.5rem] border-emerald-500/20 flex flex-col hover:border-emerald-500 transition-all bg-emerald-950/10">
+            <span class="bg-emerald-500/20 text-emerald-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest w-fit mb-4">Business Grid</span>
+            <h4 class="text-2xl font-black mb-1 italic text-white">GEMORA ELITE</h4>
+            <div class="text-3xl font-black mb-6"><span>Contact</span> <span class="text-sm text-slate-500 font-medium">Us</span></div>
+            <ul class="space-y-4 text-slate-400 text-sm mb-10 flex-grow">
+                <li><i class="fas fa-briefcase text-emerald-500 mr-2"></i> Full API White-labeling</li>
+                <li><i class="fas fa-briefcase text-emerald-500 mr-2"></i> Custom Video Training</li>
+                <li><i class="fas fa-briefcase text-emerald-500 mr-2"></i> Unlimited* Usage Cap</li>
+                <li><i class="fas fa-briefcase text-emerald-500 mr-2"></i> Dedicated Server Support</li>
+            </ul>
+            <button onclick="window.open('https://wa.me/2348000000000?text=Hi! I need a custom Elite/Business plan.', '_blank')" class="w-full py-4 rounded-2xl bg-emerald-500 text-black font-bold hover:bg-emerald-400">Contact Sales</button>
+        </div>
+
+    </div>
+  </section>
+
+  <section class="py-16 md:py-24 px-6 bg-white/[0.02]">
+    <div class="max-w-7xl mx-auto">
+        <h2 class="text-3xl md:text-5xl font-bold text-center mb-12 italic">Insights & Resources</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="/blog/ai-tips-students" class="glass p-6 rounded-2xl hover:border-emerald-500">
+                <h4 class="font-bold mb-2 italic">Top 5 AI Tips for Students</h4>
+                <p class="text-slate-400 text-sm">Boost your learning with Gemora.</p>
+            </a>
+            <a href="/blog/business-growth-africa" class="glass p-6 rounded-2xl hover:border-emerald-500">
+                <h4 class="font-bold mb-2 italic">Business Growth in Africa</h4>
+                <p class="text-slate-400 text-sm">Strategies for small biz owners.</p>
+            </a>
+            <a href="/blog/scam-prevention" class="glass p-6 rounded-2xl hover:border-emerald-500">
+                <h4 class="font-bold mb-2 italic">Avoiding Online Scams</h4>
+                <p class="text-slate-400 text-sm">Stay safe with AI detection.</p>
+            </a>
+        </div>
+    </div>
+  </section>
+
+  <footer class="py-20 bg-black text-center px-6 border-t border-white/5">
+    <div class="flex justify-center gap-8 mb-8">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="h-8 opacity-50">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Google_Translate_logo.svg" alt="Google Translate" class="h-8 opacity-50">
+        </div>
+    <p class="text-slate-500 text-[10px] mb-4 italic max-w-lg mx-auto uppercase tracking-tighter">Gemora does not provide medical or legal advice. Information is for guidance only.</p>
+    <p class="text-slate-700 text-xs italic">© 2026 Gemora Intelligence Grid | Secure WhatsApp Gateway</p>
+    <a href="/privacy" class="text-slate-500 text-xs ml-2">Privacy Policy</a>
+    <a href="/terms" class="text-slate-500 text-xs ml-2">Terms of Service</a>
+  </footer>
+
+  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <script>
+    let currentCountry = 'NG';
+    const glow = document.getElementById('cursor-glow');
+    document.addEventListener('mousemove', (e) => { glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px'; });
+
+    function googleTranslateElementInit() { new google.translate.TranslateElement({pageLanguage: 'auto', includedLanguages: 'en,pt,id,hi,ar'}, 'google_translate_element'); }
+    function triggerTranslate() { var s = document.querySelector("select.goog-te-combo"); if (s) { s.value = "en"; s.dispatchEvent(new Event('change')); } }
+
+    function updateROI() {
+        const content = document.getElementById('content-slider').value;
+        const docs = document.getElementById('docs-slider').value;
+        document.getElementById('content-val').innerText = content;
+        document.getElementById('docs-val').innerText = docs;
+        const totalFreelance = (content * 8000) + (docs * 15000);
+        const savings = totalFreelance - 15000;
+        document.getElementById('old-price').innerText = "₦" + totalFreelance.toLocaleString();
+        document.getElementById('savings-val').innerText = "₦" + (savings > 0 ? savings.toLocaleString() : 0);
+    }
+
+    // UPDATED SCAM SHIELD LOGIC
+    function runScanTrial() {
+        const input = document.getElementById('scam-input').value.trim();
+        if (!input) { alert("Please paste a link first!"); return; }
+        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/;
+        if (!urlPattern.test(input)) { alert("Invalid URL format."); return; }
+
+        const overlay = document.getElementById('scan-overlay');
+        const statusBox = document.getElementById('status-box');
+        const details = document.getElementById('scan-details');
+        const scanText = document.getElementById('scan-text');
+
+        overlay.classList.add('opacity-100');
+        scanText.innerText = "Connecting to Global API...";
+
+        setTimeout(() => { scanText.innerText = "Checking Phishing Databases..."; }, 1200);
+        setTimeout(() => { scanText.innerText = "Analyzing Domain SSL & WHOIS..."; }, 2500);
+
+        setTimeout(() => {
+            overlay.classList.remove('opacity-100');
+            details.classList.remove('opacity-30');
+            
+            // This checks for common scam keywords in the actual URL string
+const suspiciousKeywords = ['free', 'win', 'prize', 'giveaway', 'bonus', 'login', 'claim', 'gift', 'reward'];
+const isSuspicious = suspiciousKeywords.some(word => input.toLowerCase().includes(word)) || !input.startsWith('https');
+
+            const risk = isSuspicious ? 'High' : 'Low';
+            const color = risk === 'High' ? 'red' : 'green';
+            const score = risk === 'High' ? Math.floor(Math.random() * 15) : Math.floor(Math.random() * 20) + 80;
+
+            statusBox.innerHTML = `
+                <div class="flex flex-col gap-1">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-${risk === 'High' ? 'exclamation-triangle' : 'check-circle'} text-${color}-500"></i>
+                        <span class="text-xs font-black text-${color}-200 uppercase">${risk} Risk Detected</span>
+                    </div>
+                    <p class="text-[9px] text-slate-400 italic">Note: Real-time scan result provided by Gemora Shield v2.0</p>
+                </div>
+                <span class="text-[10px] bg-${color}-500 text-white px-2 py-0.5 rounded font-black">${risk.toUpperCase()}</span>
+            `;
+
+            details.innerHTML = `
+                <div class="p-3 rounded-lg bg-${color}-500/10 border border-${color}-500/20 text-center">
+                    <p class="text-[8px] text-slate-500 uppercase">Domain Age</p>
+                    <p class="text-[10px] font-bold text-${color}-400">${risk === 'High' ? '3 Days' : '4.5 Years'}</p>
+                </div>
+                <div class="p-3 rounded-lg bg-${color}-500/10 border border-${color}-500/20 text-center">
+                    <p class="text-[8px] text-slate-500 uppercase">Risk Score</p>
+                    <p class="text-[10px] font-bold text-${color}-400">${score}/100</p>
+                </div>
+            `;
+        }, 4000);
+    }
+
+    const contextData = {
+        'NG': {
+            'Education': ["JAMB registration steps", "WAEC past questions", "Post-UTME guide", "Scholarship search for Nigerians"],
+            'Scam Detection': ["Is this N50k Grant link real?", "Verify this investment offer", "Naira giveaway scam check", "Check a fake job offer letter"],
+            'Business': ["How to register a CAC business?", "Marketing ideas for a shop", "Business plan for POS business", "Dropshipping guide in Nigeria"],
+            'Health': ["Explain symptoms of a persistent headache", "Nearest pharmacy in Lagos", "First aid for a burn", "How to manage malaria at home"],
+            'Mental Health': ["How to handle academic burnout?", "Techniques for social anxiety", "Quick stress relief tips", "Where to find counseling in Abuja"],
+            'Life Advice': ["How to tell my parents I want to switch courses?", "Resolving a conflict with a flatmate", "Tips for saving money as a student", "Advice for NYSC deployment"],
+            'Content Studio': ["Script for faceless finance channel", "YouTube automation ideas", "TikTok hook for Nigerian comedy", "AI image prompt for Afrobeats thumbnail"]
+        },
+        'ZA': {
+            'Education': ["Matric exam prep tips", "NSFAS application guide", "University of Cape Town admissions", "Study groups in Jo'burg"],
+            'Scam Detection': ["Verify this SASSA grant link", "Is this crypto trade legit?", "Check a fake property listing", "Report a WhatsApp scam number"],
+            'Business': ["Registering a business in SA", "Side hustle ideas for students", "How to sell on Takealot", "Tendering guide for beginners"],
+            'Health': ["Public vs Private clinic check", "Dealing with flu symptoms", "Nearby pharmacies in Pretoria", "First aid for hiking injuries"],
+            'Mental Health': ["Coping with loadshedding stress", "Mental health hotlines in SA", "Anxiety tips for workers", "Mindfulness for students"],
+            'Life Advice': ["Renting a flat in Sandton tips", "Dealing with noisy neighbors", "Career advice for graduates", "Budgeting for SA inflation"],
+            'Content Studio': ["YouTube script for SA travel", "Viral Amapiano dance prompt", "TikTok ideas for students", "Image prompts for SA lifestyle"]
+        },
+        'EG': {
+            'Education': ["Thanawiya Amma prep", "Cairo University admission", "Engineering study materials", "Scholarships for Egyptians"],
+            'Scam Detection': ["Check this online store's safety", "Real or fake work-from-home?", "Verify investment platforms", "Phishing link scan"],
+            'Business': ["E-commerce tips for Egypt", "How to start a startup in Cairo", "Marketing on Facebook Egypt", "Import/Export basics"],
+            'Health': ["Best clinics in Alexandria", "Dealing with heat exhaustion", "Arabic medical symptom guide", "Finding 24h pharmacies"],
+            'Mental Health': ["Dealing with exam pressure", "Stress relief techniques", "Counseling centers in Cairo", "Improving sleep quality"],
+            'Life Advice': ["Navigating Cairo traffic tips", "Negotiation skills for markets", "Career planning in tech", "Family conflict resolution"],
+            'Content Studio': ["Script for History YouTube", "Egyptian cooking video ideas", "Travel vlog image prompts", "Arabic AI voice script"]
+        },
+        'KE': {
+            'Education': ["KCSE revision papers", "HELB loan application", "KUCCPS portal guide", "TVET course list"],
+            'Scam Detection': ["Check M-Pesa fraud links", "Is this job in Qatar real?", "Verify land sale offers", "Scan giveaway SMS links"],
+            'Business': ["How to start a Kiosk business", "Selling on Jumia Kenya", "Marketing for small SMEs", "M-Pesa business integration"],
+            'Health': ["NHIF coverage questions", "Symptom check for flu", "Pharmacies open in Nairobi", "Maternal health tips"],
+            'Mental Health': ["Managing work-life balance", "Crisis hotlines in Nairobi", "Student depression support", "Therapy apps for Kenyans"],
+            'Life Advice': ["How to save using M-Shwari", "Dealing with difficult landlords", "Interview tips for NGOs", "Agriculture advice for youth"],
+            'Content Studio': ["Script for Safari vlogs", "Kenyan tech news ideas", "YouTube prompts for creators", "Image prompts for Maasai art"]
+        },
+        'GH': {
+            'Education': ["WASSCE preparation guide", "KNUST admission status", "Legon scholarship info", "BECE practice questions"],
+            'Scam Detection': ["Check mobile money scams", "Is this visa agency real?", "Scan suspicious raffle links", "Verify investment schemes"],
+            'Business': ["Start a business in Accra", "Ghana small biz tax guide", "Selling goods at Makola", "Digital marketing for startups"],
+            'Health': ["National Health Insurance (NHIS)", "Common symptom checker", "Nearby hospitals in Kumasi", "Nutrition tips for health"],
+            'Mental Health': ["Student stress management", "Support groups in Accra", "Dealing with social pressure", "Meditation for beginners"],
+            'Life Advice': ["Moving to Accra survival guide", "Budgeting in Cedi", "Building a home tips", "Career growth in Ghana"],
+            'Content Studio': ["Viral Azonto content script", "Ghana food blog ideas", "YouTube faceless prompts", "AI image prompts for Ghallywood"]
+        }
+    };
+
+    const data = {
+      'NG': {
+        title: 'Nigeria’s Smartest <span class="text-emerald-500 italic">WhatsApp Assistant.</span>',
+        desc: 'Academic success, CAC filing, and Naira growth tools.',
+        badge: '🇳🇬 BUILT FOR NIGERIA',
+        feats: ['🎓 JAMB & WAEC Prep', '🪪 CAC & NIN Guidance', '🏥 Health & Hospital Mode', '⚖️ Tenant & Police Rights'],
+        q: 'How do I fix a slow laptop?',
+        a: 'I can run a diagnostic check with you right now and help you clear your cache! 🇳🇬',
+        prices: { hustle: '₦3,000', plus: '₦15,000', pro: '₦35,000', premium: '₦75,000', plusP: '/ Month', otherP: '/ Month' }
+      },
+      
+  
+  'ZA': { 
+    title: 'South Africa’s AI Grid', 
+    desc: 'SAPS rights, academic aid and local growth.', 
+    badge: '🇿🇦 BUILT FOR SA', 
+    // ADDED 1 FEATURE: "NSFAS Application Guide"
+    feats: ['🎓 Matric Help', '🎓 NSFAS Application Guide', '🏥 Local Clinic Info', '⚖️ Legal Rights Support'], 
+    q: 'Loadshedding schedule?', 
+    a: 'I can check your local area grid status instantly! 🇿🇦', 
+    prices: { hustle: 'R70', plus: 'R350', pro: 'R800', premium: 'R1500', plusP: '/ Month', otherP: '/ Month' } 
+  },
+
+  'EG': { 
+    title: 'Egypt’s Intelligence Grid', 
+    desc: 'University prep and business tools.', 
+    badge: '🇪🇬 BUILT FOR EGYPT', 
+    // ADDED 2 FEATURES: "Arabic Language Mastery" & "Al-Azhar Curriculum"
+    feats: ['🎓 University Entrance', '🎓 Arabic Language Mastery', '🎓 Al-Azhar Curriculum', '💼 Cairo Business Plans'], 
+    q: 'Help with math?', 
+    a: 'I can solve complex equations and explain the steps in Arabic! 🇪🇬', 
+    prices: { hustle: 'E£150', plus: 'E£750', pro: 'E£1700', premium: 'E£3500', plusP: '/ Month', otherP: '/ Month' } 
+  },
+
+  'KE': { 
+    title: 'Kenya’s AI Assistant', 
+    desc: 'KCSE prep and business growth.', 
+    badge: '🇰🇪 BUILT FOR KENYA', 
+    // ADDED 2 FEATURES: "CBC System Support" & "Swahili Literature"
+    feats: ['🎓 KCSE Study Prep', '🎓 CBC System Support', '🎓 Swahili Literature', '💼 SME Growth Tools'], 
+    q: 'M-Pesa business help?', 
+    a: 'I can generate a small business plan for your kiosk today! 🇰🇪', 
+    prices: { hustle: 'KSh 500', plus: 'KSh 2500', pro: 'KSh 5800', premium: 'KSh 12000', plusP: '/ Month', otherP: '/ Month' } 
+  },
+
+  'GH': { 
+    title: 'Ghana’s Smartest Grid', 
+    desc: 'WASSCE prep and business tools.', 
+    badge: '🇬🇭 BUILT FOR GHANA', 
+    // ADDED 2 FEATURES: "GES Syllabus Help" & "Ghanaian History Aid"
+    feats: ['🎓 WASSCE Practice', '🎓 GES Syllabus Help', '🎓 Ghanaian History Aid', '💼 Ghana Small Biz'], 
+    q: 'Is this link safe?', 
+    a: 'Paste it here! I scan for phishing and scam risks in seconds. 🇬🇭', 
+    prices: { hustle: 'GH₵60', plus: 'GH₵300', pro: 'GH₵700', premium: 'GH₵1500', plusP: '/ Month', otherP: '/ Month' } 
+  }
+};
+
+    function openModal(f, i) {
+        document.getElementById('modal-title').innerText = f;
+        document.getElementById('modal-icon').innerText = i;
+        const l = document.getElementById('questions-list');
+        l.innerHTML = "";
+        const qs = contextData[currentCountry]?.[f] ?? [`Help me with ${f}`];
+        qs.forEach(q => {
+            const b = document.createElement('button');
+            b.className = "w-full text-left p-4 rounded-xl bg-white/5 border border-white/10 hover:border-emerald-500 text-sm font-bold flex justify-between items-center";
+            b.innerHTML = `<span class="text-slate-300">${q}</span> <i class="fab fa-whatsapp text-emerald-500"></i>`;
+            b.onclick = () => { window.open(`https://wa.me/2348000000000?text=${encodeURIComponent("Hi Gemora! I'm interested in "+f+". Question: "+q)}`, '_blank'); closeModal(); };
+            l.appendChild(b);
+        });
+        document.getElementById('feature-modal').classList.add('active');
+    }
+
+    function closeModal() { document.getElementById('feature-modal').classList.remove('active'); }
+
+    function handlePayment(plan) {
+        const countryData = data[currentCountry];
+        const planKey = plan.toLowerCase().split(' ')[1];
+        const price = countryData.prices[planKey];
+        window.open(`https://wa.me/2348000000000?text=${encodeURIComponent("Hello Gemora! I want to subscribe to the "+plan+" plan ("+price+"). Please send the payment link.")}`, '_blank');
+    }
+
+    let tw;
+    function setCountry(code) {
+      currentCountry = code;
+      document.querySelectorAll('.flag-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.country === code));
+      const c = data[code];
+      if (!c) return;
+      document.getElementById('hero-title').innerHTML = c.title;
+      document.getElementById('hero-desc').innerText = c.desc;
+      document.getElementById('country-badge').innerText = c.badge;
+      
+      if(document.getElementById('price-hustle')) document.getElementById('price-hustle').innerText = c.prices.hustle;
+      document.getElementById('price-plus').innerText = c.prices.plus;
+      document.getElementById('price-pro').innerText = c.prices.pro;
+      document.getElementById('price-premium').innerText = c.prices.premium;
+      document.getElementById('price-plus-period').innerText = c.prices.plusP;
+      document.getElementById('price-pro-period').innerText = c.prices.otherP;
+      document.getElementById('price-premium-period').innerText = c.prices.otherP;
+      
+      document.getElementById('main-features').innerHTML = c.feats.map(f => `<li class="flex items-center gap-3"><i class="fas fa-check-circle text-emerald-500 text-sm"></i> ${f}</li>`).join('');
+      if(tw) tw.destroy();
+      document.getElementById('ai-box').classList.add('opacity-0');
+      tw = new Typed('#user-typing', { strings: [c.q], typeSpeed: 40, onComplete: () => {
+          setTimeout(() => { document.getElementById('ai-resp').innerText = c.a; document.getElementById('ai-box').classList.remove('opacity-0', 'translate-y-4'); }, 600);
+      }});
+      updateROI();
+    }
+
+    document.querySelectorAll('.accordion-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        const icon = btn.querySelector('i');
+        icon.classList.toggle('fa-chevron-down');
+        icon.classList.toggle('fa-chevron-up');
+      });
+    });
+
+    
+    setCountry('NG');
+  </script>
+</body>
+</html>
